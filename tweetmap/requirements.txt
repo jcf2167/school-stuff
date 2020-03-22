@@ -39,7 +39,7 @@ oauthlib==0.7.2
 paramiko==1.15.2
 protobuf==2.5.0
 py2app==0.7.1
-pyOpenSSL==0.14
+pyOpenSSL==17.5.0
 pyasn1==0.1.7
 pyasn1-modules==0.0.5
 pycparser==2.10
