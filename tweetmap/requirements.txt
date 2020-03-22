@@ -82,7 +82,7 @@ python-twitter==2.2
 pytz==2012d
 queuelib==1.1.1
 redis==2.10.3
-requests==2.4.3
+requests==2.20.0
 requests-oauthlib==0.4.2
 rsa==3.1.4
 scipy==0.11.0
