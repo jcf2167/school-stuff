@@ -8,7 +8,7 @@ Naked==0.1.30
 PyRSS2Gen==1.0.0
 PyYAML==3.11
 Scrapy==0.24.1
-Twisted==14.0.0
+Twisted==19.7.0
 WTForms==2.0.2
 Werkzeug==0.9.6
 altgraph==0.10.1
