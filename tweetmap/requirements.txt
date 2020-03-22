@@ -10,7 +10,7 @@ PyYAML==3.11
 Scrapy==0.24.1
 Twisted==14.0.0
 WTForms==2.0.2
-Werkzeug==0.9.6
+Werkzeug==0.15.3
 altgraph==0.10.1
 awsebcli==3.1.2
 bdist-mpkg==0.4.4
