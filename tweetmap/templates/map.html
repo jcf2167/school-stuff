@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+  <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+  <title>Tweet Heat</title>
+  <style>
+   svg {
+            display: block;
+            float: left;
+            height: 300px;
+            width: 300px;
+        }
+  html { height: 100% }
+  body { height: 100%; margin: 0; padding: 0 }
+  #map-canvas { height: 80% }
+  h1 { position:absolute; }
+  #panel {
+        position: absolute;
+        top: 5px;
+        left: 50%;
+        margin-left: -180px;
+        z-index: 5;
+        background-color: #fff;
+        padding: 5px;
+        border: 1px solid #999;
+      }
+      .arc path {
+  stroke: #fff;
+}
+body {
+  font: 10px sans-serif;
+} 
+  </style>
+     <link href="{{ url_for('static', filename='nv.d3.css') }}" rel="stylesheet" type="text/css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.2/d3.min.js" charset="utf-8"></script>
+    <script src="{{ url_for('static', filename='nv.d3.js') }}"></script>
+    <script src="{{ url_for('static', filename='stream_layers.js') }}"></script>
+<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='heatmap.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='gmaps-heatmap.js') }}"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=visualization"></script>
+<script type="text/javascript" src="//code.jquery.com/jquery-1.4.2.min.js"></script>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/0.9.16/socket.io.min.js"></script>
+  
+<script src="http://d3js.org/d3.v3.min.js"></script>
+</head>
+<body class='with-3d-shadow with-transitions'>
+
+  <div id="map-canvas" align="center"></div>
+
+  <script>
+    var negCount = 0;
+    var posCount = 0;
+        // map center
+        var myLatlng = new google.maps.LatLng(25.6586, -80.3568);
+        // map options,
+        var myOptions = {
+          zoom: 3,
+          center: myLatlng
+        };
+        // standard map
+        map = new google.maps.Map(document.getElementById("map-canvas"), myOptions);
+        // heatmap layer
+        var liveTweets = new google.maps.MVCArray();
+
+       heatmap = new google.maps.visualization.HeatmapLayer({
+          data: liveTweets,
+          radius: 25
+        });
+
+      var liveTweets_neg = new google.maps.MVCArray();
+
+       heatmap_neg = new google.maps.visualization.HeatmapLayer({
+          data: liveTweets_neg,
+          radius: 25
+        });
+       var count = 0
+       heatmap.setMap(map);
+        $(document).ready(function(){
+            namespace = '/test'; // change to an empty string to use the global namespace
+            // the socket.io documentation recommends sending an explicit package upon connection
+            // this is specially important when using the global namespace
+            var socket = io.connect('http://' + document.domain + ':' + location.port + namespace);
+     
+            // event handler for server sent data
+            // the data is displayed in the "Received" section of the page
+            socket.on('my response', function(msg) {
+                count += 1
+                console.log(count)
+                var lat = msg.lat
+                var lng = msg.lng
+                var tweetLocation = new google.maps.LatLng(lat,lng);
+                if (msg.sentiment == "positive"){
+                    liveTweets.push(tweetLocation)
+                    posCount +=1
+                }
+               else{
+                    liveTweets_neg.push(tweetLocation)
+                    negCount +=1
+               }
+                
+
+            });
+            
+        });
+
+          function toNegative() {
+            heatmap_neg.setMap(map);
+                        heatmap.setMap(null)
+
+
+            }
+          function toPositive(){
+                        heatmap.setMap(map);
+                        heatmap_neg.setMap(null)
+          }
+          function more(){
+
+            window.location = '/more?keyword='+'{{ keyword }}'+'&posCount=' + posCount+ '&negCount=' + negCount;
+          
+          
+
+          }
+        </script>
+
+  
+
+    <div id="panel">
+      <button class="btn btn-default" onclick="toNegative()">Negative Sentiment</button>
+      <button class="btn btn-default" onclick="toPositive()">Positive Sentiment</button>
+      <button class="btn btn-default" onclick="more()">More</button>
+    </div>
+
+
+  </body>
+      </html>
